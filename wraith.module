@@ -1,0 +1,16 @@
+<?php
+/**
+ * Implements hook_theme().
+ */
+function wraith_theme() {
+  return array(
+
+    'wraith_capture' => array(
+      'variables' => array(
+        'links' => array(),
+        'current_domain' => NULL,
+        'new_domain' => NULL
+      )
+    )
+  );
+}

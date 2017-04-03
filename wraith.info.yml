@@ -1,0 +1,6 @@
+name: Wraith integration
+type: module
+description: 'Provide '
+package: 'Wraith'
+core: 8.x
+configure: wraith.settings
