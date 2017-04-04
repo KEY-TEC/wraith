@@ -4,7 +4,6 @@
  */
 function wraith_theme() {
   return array(
-
     'wraith_capture' => array(
       'variables' => array(
         'links' => array(),

@@ -37,37 +37,37 @@ class WraithSettingsForm extends ConfigFormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Current domain'),
       '#default_value' => $config->get('current_domain'),
-      '#required' =>true
+      '#required' => TRUE
     ];
     $form['wraith_settings']['basics']['new_domain'] = [
       '#type' => 'textfield',
       '#title' => $this->t('New domain'),
       '#default_value' => $config->get('new_domain'),
-      '#required' =>true
+      '#required' => TRUE
     ];
 
     $form['wraith_settings']['basics']['percentage'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Average percentages'),
       '#description' => $this->t('How many urls should be exported in percent each selected bundle'),
-      '#default_value' => $config->get('percentage',10),
-      '#required' =>true
+      '#default_value' => $config->get('percentage', 10),
+      '#required' => TRUE
     ];
 
     $form['wraith_settings']['basics']['min'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Minimum urls'),
       '#description' => $this->t('How many urls should be minimum exported each selected bundle'),
-      '#default_value' => $config->get('min',10),
-      '#required' =>true
+      '#default_value' => $config->get('min', 10),
+      '#required' => TRUE
     ];
 
     $form['wraith_settings']['basics']['max'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Maximum urls'),
       '#description' => $this->t('How many urls should be maximum exported each selected bundle'),
-      '#default_value' => $config->get('max',10),
-      '#required' =>true
+      '#default_value' => $config->get('max', 10),
+      '#required' => TRUE
     ];
 
     $form['wraith_settings']['languages'] = [
@@ -116,9 +116,17 @@ class WraithSettingsForm extends ConfigFormBase {
       '#type' => 'textarea',
       '#title' => $this->t('Additional urls'),
       '#default_value' => $config->get('additional_urls'),
-      '#description' => $this->t('Add one internal url each line. Eg: frontpage: /node/11' )
+      '#description' => $this->t('Add one internal url each line. Eg: frontpage: /node/11')
     ];
-    return parent::buildForm($form, $form_state);
+    $form = parent::buildForm($form, $form_state);
+    $form['actions']['export'] = array(
+      '#type' => 'submit',
+      '#value' => $this->t('Save and export'),
+      '#button_type' => 'primary',
+      '#submit' => array('::submitAndExport')
+    );
+
+    return $form;
   }
 
   private function getActiveCheckboxes($ary) {
@@ -130,7 +138,9 @@ class WraithSettingsForm extends ConfigFormBase {
     }
     return $active;
   }
-
+  public function submitAndExport (array &$form, FormStateInterface $form_state){
+    $form_state->setRedirect('wraith.capture');
+  }
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $config = $this->config('wraith.settings');
     $values = $form_state->getValues();
@@ -149,5 +159,7 @@ class WraithSettingsForm extends ConfigFormBase {
     }
     $config->save();
     parent::submitForm($form, $form_state);
+
+
   }
 }
