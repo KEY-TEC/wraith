@@ -48,11 +48,27 @@ class WraithSettingsForm extends ConfigFormBase {
 
     $form['wraith_settings']['basics']['percentage'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('How many urls should be checked in percent'),
+      '#title' => $this->t('Average percentages'),
+      '#description' => $this->t('How many urls should be exported in percent each selected bundle'),
       '#default_value' => $config->get('percentage',10),
       '#required' =>true
     ];
 
+    $form['wraith_settings']['basics']['min'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Minimum urls'),
+      '#description' => $this->t('How many urls should be minimum exported each selected bundle'),
+      '#default_value' => $config->get('min',10),
+      '#required' =>true
+    ];
+
+    $form['wraith_settings']['basics']['max'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Maximum urls'),
+      '#description' => $this->t('How many urls should be maximum exported each selected bundle'),
+      '#default_value' => $config->get('max',10),
+      '#required' =>true
+    ];
 
     $form['wraith_settings']['languages'] = [
       '#title' => $this->t('Languages'),
@@ -122,6 +138,8 @@ class WraithSettingsForm extends ConfigFormBase {
     $config->set('current_domain', $form_state->getValue('current_domain'));
     $config->set('new_domain', $form_state->getValue('new_domain'));
     $config->set('percentage', $form_state->getValue('percentage'));
+    $config->set('min', $form_state->getValue('min'));
+    $config->set('max', $form_state->getValue('max'));
     $config->set('additional_urls', $form_state->getValue('additional_urls'));
 
     foreach ($values as $key => $value) {

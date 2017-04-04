@@ -62,6 +62,8 @@ class WraithController extends ControllerBase {
 
     $config = $this->configFactory->get('wraith.settings');
     $percentage = $config->get('percentage');
+    $min = $config->get('min');
+    $max = $config->get('max');
     $languages = $config->get('languages');
 
     $types = ['node', 'taxonomy_term', 'media'];
@@ -78,7 +80,7 @@ class WraithController extends ControllerBase {
     foreach ($active_bundles as $entity_type => $bundles) {
       foreach ($bundles as $bundle) {
         foreach ($languages as $language) {
-          $urls += $this->getUrls($entity_type, $bundle, $language, $percentage);
+          $urls += $this->getUrls($entity_type, $bundle, $language, $percentage, $min, $max);
         }
       }
     }
@@ -96,7 +98,7 @@ class WraithController extends ControllerBase {
     return $response;
   }
 
-  private function getUrls($entity_type, $bundle, $langcode, $percentage) {
+  private function getUrls($entity_type, $bundle, $langcode, $percentage, $min, $max) {
     $keys = \Drupal::entityTypeManager()
       ->getStorage($entity_type)
       ->getEntityType()
@@ -106,8 +108,14 @@ class WraithController extends ControllerBase {
     $count_query->condition($keys['bundle'], $bundle);
     $count_query->condition('langcode', $langcode);
     $count_result = $count_query->count()->execute();
-
     $url_to_fetch_count = round($count_result / 100 * $percentage);
+    if ($url_to_fetch_count < $min) {
+      $url_to_fetch_count = $min;
+    }
+    if ($url_to_fetch_count > $max) {
+      $url_to_fetch_count = $max;
+    }
+
     $query = \Drupal::entityQuery($entity_type);
     $query->addTag('wraith_random');
     $query->condition($keys['bundle'], $bundle);
@@ -116,7 +124,7 @@ class WraithController extends ControllerBase {
     $query_results = $query->execute();
     $results = [];
     $language = \Drupal::languageManager()->getLanguage($langcode);
-    foreach ($query_results  as $row) {
+    foreach ($query_results as $row) {
       $entity_id = $row;
       $url = Url::fromRoute('entity.' . $entity_type . '.canonical', [$entity_type => $entity_id], ['language' => $language]);
       $results [$entity_type . '_' . $langcode . '_' . $entity_id] = $url->toString();

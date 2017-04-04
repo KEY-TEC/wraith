@@ -7,9 +7,9 @@ wraith.admin:
     _permission: 'administer wraith'
 
 wraith.capture:
-  path: '/wraith-capture.txt'
+  path: '/admin/config/wraith/wraith-capture.txt'
   defaults:
     _controller: '\Drupal\wraith\Controller\WraithController::renderCaptureYaml'
     _title: 'Capture.yml'
   requirements:
-    _access: 'TRUE'
+      _permission: 'export wraith'

@@ -2,3 +2,8 @@ administer wraith:
     title: 'Administer Wraith settings.'
     description: 'Configure Wraith settings, select which node types are included in wraith configuration.'
     restrict access: true
+
+export wraith:
+    title: 'Export Wraith.'
+    description: 'Can export wraith capture file.'
+    restrict access: true

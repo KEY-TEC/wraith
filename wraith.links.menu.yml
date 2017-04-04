@@ -1,0 +1,6 @@
+wraith.settings:
+  title: 'Wraith'
+  description: 'Configure and generate wraith capture configuration.'
+  parent: system.admin_config_development
+  route_name: wraith.admin
+  menu_name: admin
