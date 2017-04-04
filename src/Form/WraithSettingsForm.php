@@ -70,6 +70,15 @@ class WraithSettingsForm extends ConfigFormBase {
       '#required' => TRUE
     ];
 
+    $resolutions = !empty($config->get('screen_widths')) ? $config->get('screen_widths'): "1280\n768\n320";
+    $form['wraith_settings']['basics']['screen_widths'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Screen widths'),
+      '#description' => $this->t('Screen widths (and optional height) to resize the browser to before taking the screenshot'),
+      '#default_value' => $resolutions,
+      '#required' => TRUE
+    ];
+
     $form['wraith_settings']['languages'] = [
       '#title' => $this->t('Languages'),
       '#type' => 'fieldset',
@@ -138,9 +147,12 @@ class WraithSettingsForm extends ConfigFormBase {
     }
     return $active;
   }
-  public function submitAndExport (array &$form, FormStateInterface $form_state){
+
+  public function submitAndExport(array &$form, FormStateInterface $form_state) {
+    $this->submitForm($form, $form_state);
     $form_state->setRedirect('wraith.capture');
   }
+
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $config = $this->config('wraith.settings');
     $values = $form_state->getValues();
@@ -150,6 +162,7 @@ class WraithSettingsForm extends ConfigFormBase {
     $config->set('percentage', $form_state->getValue('percentage'));
     $config->set('min', $form_state->getValue('min'));
     $config->set('max', $form_state->getValue('max'));
+    $config->set('screen_widths', $form_state->getValue('screen_widths'));
     $config->set('additional_urls', $form_state->getValue('additional_urls'));
 
     foreach ($values as $key => $value) {

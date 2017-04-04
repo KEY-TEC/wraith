@@ -8,7 +8,8 @@ function wraith_theme() {
       'variables' => array(
         'links' => array(),
         'current_domain' => NULL,
-        'new_domain' => NULL
+        'new_domain' => NULL,
+        'screen_widths' => NULL
       )
     )
   );

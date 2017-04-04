@@ -65,6 +65,8 @@ class WraithController extends ControllerBase {
     $min = $config->get('min');
     $max = $config->get('max');
     $languages = $config->get('languages');
+    $additional_urls = $config->get('additional_urls');
+    $screen_widths = $config->get('screen_widths');
 
     $types = ['node', 'taxonomy_term', 'media'];
     $active_bundles = [];
@@ -80,15 +82,20 @@ class WraithController extends ControllerBase {
     foreach ($active_bundles as $entity_type => $bundles) {
       foreach ($bundles as $bundle) {
         foreach ($languages as $language) {
-          $urls += $this->getUrls($entity_type, $bundle, $language, $percentage, $min, $max);
+          $urls += $this->getEntityUrls($entity_type, $bundle, $language, $percentage, $min, $max);
         }
       }
     }
+    foreach ($languages as $language) {
+      $urls += $this->getAdditionalUrls($additional_urls, $language);
+    }
+    $screen_widths = explode("\n", $screen_widths);
     $build = [
       '#theme' => 'wraith_capture',
       '#links' => $urls,
       '#current_domain' => $config->get('current_domain'),
-      '#new_domain' => $config->get('new_domain')
+      '#new_domain' => $config->get('new_domain'),
+      '#screen_widths' => $screen_widths
     ];
 
     $output = render($build);
@@ -98,7 +105,22 @@ class WraithController extends ControllerBase {
     return $response;
   }
 
-  private function getUrls($entity_type, $bundle, $langcode, $percentage, $min, $max) {
+  private function getAdditionalUrls($additional_urls, $language) {
+    $rows = explode("\n", $additional_urls);
+    $results = [];
+    foreach ($rows as $row) {
+      $row_items = explode(':',$row);
+      if (isset($row_items[1])) {
+        $key = trim ($row_items[0]);
+        $internal_url = ltrim(trim ($row_items[1]), '/');;
+        $results[$key] = Url::fromUri('internal:/'.$internal_url)->toString();
+      }
+
+    }
+    return $results;
+  }
+
+  private function getEntityUrls($entity_type, $bundle, $langcode, $percentage, $min, $max) {
     $keys = \Drupal::entityTypeManager()
       ->getStorage($entity_type)
       ->getEntityType()
