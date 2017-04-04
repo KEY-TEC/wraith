@@ -14,3 +14,9 @@ function wraith_theme() {
     )
   );
 }
+
+function wraith_query_alter(Drupal\Core\Database\Query\AlterableInterface $query) {
+  if ($query->hasTag('wraith_random')) {
+    $query->orderRandom();
+  }
+}

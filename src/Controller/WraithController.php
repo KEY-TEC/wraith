@@ -4,8 +4,6 @@ namespace Drupal\wraith\Controller;
 
 use Drupal\Core\Config\ConfigFactory;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Entity\EntityType;
-use Drupal\Core\Language\LanguageManager;
 use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -99,7 +97,10 @@ class WraithController extends ControllerBase {
   }
 
   private function getUrls($entity_type, $bundle, $langcode, $percentage) {
-    $keys = \Drupal::entityTypeManager()->getStorage($entity_type)->getEntityType()->getKeys();
+    $keys = \Drupal::entityTypeManager()
+      ->getStorage($entity_type)
+      ->getEntityType()
+      ->getKeys();
 
     $count_query = \Drupal::entityQuery($entity_type);
     $count_query->condition($keys['bundle'], $bundle);
@@ -108,16 +109,16 @@ class WraithController extends ControllerBase {
 
     $url_to_fetch_count = round($count_result / 100 * $percentage);
     $query = \Drupal::entityQuery($entity_type);
-
+    $query->addTag('wraith_random');
     $query->condition($keys['bundle'], $bundle);
     $query->condition('langcode', $langcode);
-    //$query->sortAggregate('id','RAND');
     $query->range(0, $url_to_fetch_count);
-    $entity_ids = $query->execute();
+    $query_results = $query->execute();
     $results = [];
     $language = \Drupal::languageManager()->getLanguage($langcode);
-    foreach ($entity_ids as $entity_id => $x) {
-      $url = Url::fromRoute('entity.' . $entity_type . '.canonical', [$entity_type => $entity_id],  ['language' => $language]);
+    foreach ($query_results  as $row) {
+      $entity_id = $row;
+      $url = Url::fromRoute('entity.' . $entity_type . '.canonical', [$entity_type => $entity_id], ['language' => $language]);
       $results [$entity_type . '_' . $langcode . '_' . $entity_id] = $url->toString();
     }
 
